@@ -42,5 +42,8 @@ async function bootstrap() {
   logger.log(
     `API Documentation available at http://localhost:${port}/api-docs`,
   );
+  logger.log(
+    `Google Maps API Key ${process.env.GOOGLE_MAPS_API_KEY ? 'Found' : 'Missing'}`,
+  );
 }
 bootstrap();
