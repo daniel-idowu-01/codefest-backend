@@ -9,9 +9,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('visits')
 export class CreateVisitDto {
-  @ApiProperty({ description: 'Unique identifier for the visit' })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    // @ApiProperty({ description: 'Unique identifier for the visit' })
+    // @PrimaryGeneratedColumn('uuid')
+    // id: string;
 
   @ApiProperty({ description: 'Date of the antenatal visit' })
   @Column({ type: 'datetime' })
