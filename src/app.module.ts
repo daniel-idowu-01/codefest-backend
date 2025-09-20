@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { VisitsModule } from './visits/visits.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { HealthModule } from './health/health.module';
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { HealthModule } from './health/health.module';
       synchronize: true,
       logging: process.env.NODE_ENV !== 'production',
     }),
-    UsersModule, AuthModule, VisitsModule, ContactsModule, HealthModule],
+    UsersModule, AuthModule, VisitsModule, ContactsModule, HealthModule, LocationModule],
   controllers: [AppController],
   providers: [AppService],
 })
