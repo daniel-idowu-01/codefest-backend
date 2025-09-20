@@ -1,0 +1,35 @@
+import { Controller, Post, Body } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { CreateAuthDto } from './dto/create-auth.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('signup')
+  signUp(@Body() createAuthDto: CreateAuthDto) {
+    try {
+      const response = this.authService.signUp(createAuthDto);
+
+      return new SuccessResponseObject(
+        'Created account successfully!',
+        response,
+      );
+    } catch (error) {
+      ErrorResponseObject('Failed to create account', error);
+    }
+  }
+
+  @Post('login')
+  login(@Body() loginAuthDto: LoginAuthDto) {
+    try {
+      const response = this.authService.login(loginAuthDto);
+
+      return new SuccessResponseObject('User logged in!', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to log user in', error);
+    }
+  }
+}
