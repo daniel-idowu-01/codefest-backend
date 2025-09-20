@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { VisitsModule } from './visits/visits.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { VisitsModule } from './visits/visits.module';
       synchronize: true,
       logging: process.env.NODE_ENV !== 'production',
     }),
-    UsersModule, AuthModule, VisitsModule],
+    UsersModule, AuthModule, VisitsModule, ContactsModule],
   controllers: [AppController],
   providers: [AppService],
 })
