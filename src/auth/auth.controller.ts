@@ -9,9 +9,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body() createAuthDto: CreateAuthDto) {
+  async signUp(@Body() createAuthDto: CreateAuthDto) {
     try {
-      const response = this.authService.signUp(createAuthDto);
+      const response = await this.authService.signUp(createAuthDto);
 
       return new SuccessResponseObject(
         'Created account successfully!',
@@ -23,9 +23,9 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() loginAuthDto: LoginAuthDto) {
+  async login(@Body() loginAuthDto: LoginAuthDto) {
     try {
-      const response = this.authService.login(loginAuthDto);
+      const response = await this.authService.login(loginAuthDto);
 
       return new SuccessResponseObject('User logged in!', response);
     } catch (error) {

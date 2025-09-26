@@ -40,7 +40,7 @@ async function bootstrap() {
 
   logger.log(`Maternal Health Tracker API running on port ${port}`);
   logger.log(
-    `API Documentation available at http://localhost:${port}/api-docs`,
+    `API Documentation available at http://localhost:${port}/api`,
   );
   logger.log(
     `Google Maps API Key ${process.env.GOOGLE_MAPS_API_KEY ? 'Found' : 'Missing'}`,
