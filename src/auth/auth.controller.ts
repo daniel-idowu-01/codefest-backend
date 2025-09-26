@@ -14,11 +14,11 @@ export class AuthController {
       const response = await this.authService.signUp(createAuthDto);
 
       return new SuccessResponseObject(
-        'Created account successfully!',
+        'User created successfully!',
         response,
       );
     } catch (error) {
-      ErrorResponseObject('Failed to create account', error);
+      ErrorResponseObject('Failed to create user', error);
     }
   }
 
