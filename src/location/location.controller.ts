@@ -8,6 +8,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { LocationService, NearbyHospital } from './location.service';
 import { NearbySearchDto, HospitalSearchDto } from './dto/nearby-search.dto';
+import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
 
 @ApiTags('location')
 @Controller('location')
@@ -57,10 +58,14 @@ export class LocationController {
   })
   @ApiResponse({ status: 503, description: 'Google Maps API not configured' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async findNearbyHospitals(
-    @Query() searchDto: NearbySearchDto,
-  ): Promise<NearbyHospital[]> {
-    return this.locationService.findNearbyHospitals(searchDto);
+  async findNearbyHospitals(@Query() searchDto: NearbySearchDto) {
+    try {
+      const response =
+        await this.locationService.findNearbyHospitals(searchDto);
+      return new SuccessResponseObject('Location found successfully', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to find location', error);
+    }
   }
 
   @Get('nearby-emergency')
@@ -78,10 +83,17 @@ export class LocationController {
     description: 'Invalid coordinates or parameters',
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async findNearbyEmergencyServices(
-    @Query() searchDto: NearbySearchDto,
-  ): Promise<NearbyHospital[]> {
-    return this.locationService.findNearbyEmergencyServices(searchDto);
+  async findNearbyEmergencyServices(@Query() searchDto: NearbySearchDto) {
+    try {
+      const response =
+        await this.locationService.findNearbyEmergencyServices(searchDto);
+      return new SuccessResponseObject(
+        'Emergency services found successfully',
+        response,
+      );
+    } catch (error) {
+      ErrorResponseObject('Failed to find nearby emergency services', error);
+    }
   }
 
   @Get('search-hospitals')
@@ -96,10 +108,13 @@ export class LocationController {
   })
   @ApiResponse({ status: 400, description: 'Invalid search parameters' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async searchHospitals(
-    @Query() searchDto: HospitalSearchDto,
-  ): Promise<NearbyHospital[]> {
-    return this.locationService.searchHospitals(searchDto);
+  async searchHospitals(@Query() searchDto: HospitalSearchDto) {
+    try {
+      const response = await this.locationService.searchHospitals(searchDto);
+      return new SuccessResponseObject('Hospital found successfully', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to find hospital', error);
+    }
   }
 
   @Get('place-details/:placeId')
@@ -114,11 +129,12 @@ export class LocationController {
   })
   @ApiResponse({ status: 404, description: 'Place not found' })
   async getPlaceDetails(@Query('placeId') placeId: string) {
-    const details = await this.locationService.getPlaceDetails(placeId);
-    if (!details) {
-      throw new Error('Place not found');
+    try {
+      const response = await this.locationService.getPlaceDetails(placeId);
+      return new SuccessResponseObject('Details found successfully', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to find details for the place', error);
     }
-    return details;
   }
 
   @Get('emergency-info')
@@ -132,7 +148,7 @@ export class LocationController {
     description: 'Emergency information retrieved successfully',
   })
   getEmergencyInfo() {
-    return {
+    const response = {
       emergencyNumbers: {
         national: {
           emergency: '199',
@@ -174,5 +190,6 @@ export class LocationController {
         'Arrange backup transportation options',
       ],
     };
+    return new SuccessResponseObject('Contacts fetched successfully', response);
   }
 }
