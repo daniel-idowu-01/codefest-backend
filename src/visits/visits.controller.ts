@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  Req,
+  UseGuards
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { VisitsService } from './visits.service';
@@ -14,12 +16,14 @@ import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 import { Visit } from './entities/visit.entity';
 import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('visits')
 @Controller('visits')
 export class VisitsController {
   constructor(private readonly visitsService: VisitsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a new antenatal visit record' })
   @ApiResponse({
@@ -27,7 +31,8 @@ export class VisitsController {
     description: 'Visit created successfully',
     type: Visit,
   })
-  async create(@Body() createVisitDto: CreateVisitDto) {
+  async create(@Req() req, @Body() createVisitDto: any) {
+    console.log(req.user)
     try {
       const response = await this.visitsService.create(createVisitDto);
       return new SuccessResponseObject('Visit created successfully', response);
