@@ -4,15 +4,22 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private jwtService: JwtService,
+  ) {}
   async signUp(createAuthDto: CreateAuthDto) {
     const existingUser = await this.userService.getUserByEmail(
       createAuthDto.email,
@@ -29,7 +36,24 @@ export class AuthService {
     return user;
   }
 
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userService.getUserByEmail(email);
+    if (user && (await bcrypt.compare(password, user.password))) {
+      return user;
+    }
+    return null;
+  }
+
   async login(loginAuthDto: LoginAuthDto) {
-    return `This action returns all auth`;
+    const user = await this.validateUser(
+      loginAuthDto.email,
+      loginAuthDto.password,
+    );
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const payload = { sub: user.id, email: user.email };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
