@@ -4,15 +4,15 @@ import { ValidationPipe } from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { HttpExceptionFilter } from './common/filters/http-filters.filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(cookieParser())
+  app.use(cookieParser());
   app.enableCors({
     origin: ['http://localhost:3000'],
     credentials: true,
   });
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -20,6 +20,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Maternal Health Tracker API')
@@ -40,9 +41,7 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`Maternal Health Tracker API running on port ${port}`);
-  logger.log(
-    `API Documentation available at http://localhost:${port}/api`,
-  );
+  logger.log(`API Documentation available at http://localhost:${port}/api`);
   logger.log(
     `Google Maps API Key ${process.env.GOOGLE_MAPS_API_KEY ? 'Found' : 'Missing'}`,
   );
