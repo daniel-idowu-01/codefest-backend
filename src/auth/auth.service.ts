@@ -45,12 +45,13 @@ export class AuthService {
   async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<User> {
     const { email, otp } = verifyEmailDto;
 
-    await this.otpService.validate(email, otp);
-
     const user = await this.userService.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
+    await this.otpService.validate(user.id, otp);
+
 
     if (user.emailVerifiedAt) {
       throw new ConflictException('Email already verified');
@@ -66,7 +67,7 @@ export class AuthService {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    // if(!user.emailVerifiedAt) throw new BadRequestException('Email not verified')
+    if(!user.emailVerifiedAt) throw new BadRequestException('Email not verified')
 
     if (user.onboardedAt) throw new ConflictException('User already onboarded');
 

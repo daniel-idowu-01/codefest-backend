@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Otp, OtpDocument, OtpType } from './schema/otp.schema';
 import { User, UserDocument } from 'src/users/schema/user.schema';
 import crypto from 'crypto';
@@ -37,8 +37,10 @@ export class OtpService {
     return updatedOtp;
   }
 
-  async validate(email: string, code: string): Promise<boolean> {
-    const otp = await this.otpModel.findOne({ email, otp: code }).exec();
+  async validate(userId: string, code: string): Promise<boolean> {
+    const otp = await this.otpModel
+      .findOne({ userId: new Types.ObjectId(userId), otp: code })
+      .exec();
 
     if (!otp) throw new NotFoundException('OTP not found or invalid');
     if (otp.usedAt) throw new BadRequestException('OTP already used');
