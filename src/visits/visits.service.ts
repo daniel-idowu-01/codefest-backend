@@ -1,37 +1,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
-import { Visit } from './entities/visit.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Visit, VisitDocument } from './schema/visit.schema';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { UpdateVisitDto } from './dto/update-visit.dto';
 
 @Injectable()
 export class VisitsService {
   constructor(
-    @InjectRepository(Visit)
-    private visitsRepository: Repository<Visit>,
+    @InjectModel(Visit.name) private visitModel: Model<VisitDocument>,
   ) {}
 
   async create(createVisitDto: CreateVisitDto): Promise<Visit> {
-    const visit = this.visitsRepository.create({
+    const visit = new this.visitModel({
       ...createVisitDto,
       visitDate: new Date(createVisitDto.visitDate),
-      nextVisitReminder: createVisitDto.nextVisitReminder 
-        ? new Date(createVisitDto.nextVisitReminder) 
+      nextVisitReminder: createVisitDto.nextVisitReminder
+        ? new Date(createVisitDto.nextVisitReminder)
         : null,
     });
-    
-    return this.visitsRepository.save(visit);
+    return visit.save();
   }
 
   async findAll(): Promise<Visit[]> {
-    return this.visitsRepository.find({
-      order: { visitDate: 'DESC' },
-    });
+    return this.visitModel.find().sort({ visitDate: -1 }).exec();
   }
 
   async findOne(id: string): Promise<Visit> {
-    const visit = await this.visitsRepository.findOne({ where: { id } });
+    const visit = await this.visitModel.findById(id).exec();
     if (!visit) {
       throw new NotFoundException(`Visit with ID ${id} not found`);
     }
@@ -39,12 +35,15 @@ export class VisitsService {
   }
 
   async findByDateRange(startDate: string, endDate: string): Promise<Visit[]> {
-    return this.visitsRepository.find({
-      where: {
-        visitDate: Between(new Date(startDate), new Date(endDate)),
-      },
-      order: { visitDate: 'ASC' },
-    });
+    return this.visitModel
+      .find({
+        visitDate: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      })
+      .sort({ visitDate: 1 })
+      .exec();
   }
 
   async getUpcomingReminders(): Promise<Visit[]> {
@@ -52,17 +51,15 @@ export class VisitsService {
     const nextWeek = new Date();
     nextWeek.setDate(now.getDate() + 7);
 
-    return this.visitsRepository.find({
-      where: {
-        nextVisitReminder: Between(now, nextWeek),
-      },
-      order: { nextVisitReminder: 'ASC' },
-    });
+    return this.visitModel
+      .find({
+        nextVisitReminder: { $gte: now, $lte: nextWeek },
+      })
+      .sort({ nextVisitReminder: 1 })
+      .exec();
   }
 
   async update(id: string, updateVisitDto: UpdateVisitDto): Promise<Visit> {
-    const visit = await this.findOne(id);
-    
     const updateData: any = { ...updateVisitDto };
     if (updateVisitDto.visitDate) {
       updateData.visitDate = new Date(updateVisitDto.visitDate);
@@ -71,25 +68,34 @@ export class VisitsService {
       updateData.nextVisitReminder = new Date(updateVisitDto.nextVisitReminder);
     }
 
-    await this.visitsRepository.update(id, updateData);
-    return this.findOne(id);
+    const visit = await this.visitModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .exec();
+
+    if (!visit) {
+      throw new NotFoundException(`Visit with ID ${id} not found`);
+    }
+    return visit;
   }
 
   async remove(id: string): Promise<void> {
-    const visit = await this.findOne(id);
-    await this.visitsRepository.remove(visit);
+    const visit = await this.visitModel.findByIdAndDelete(id).exec();
+    if (!visit) {
+      throw new NotFoundException(`Visit with ID ${id} not found`);
+    }
   }
 
   async getVisitStats() {
-    const totalVisits = await this.visitsRepository.count();
+    const totalVisits = await this.visitModel.countDocuments().exec();
+
     const thisMonthStart = new Date();
     thisMonthStart.setDate(1);
-    
-    const thisMonthVisits = await this.visitsRepository.count({
-      where: {
-        visitDate: Between(thisMonthStart, new Date()),
-      },
-    });
+
+    const thisMonthVisits = await this.visitModel
+      .countDocuments({
+        visitDate: { $gte: thisMonthStart, $lte: new Date() },
+      })
+      .exec();
 
     const upcomingReminders = await this.getUpcomingReminders();
 

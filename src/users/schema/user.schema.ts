@@ -7,13 +7,18 @@ export type UserDocument = User & Document;
 
 @Schema({
   collection: 'users',
-  timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret: Record<string, any>) => {
+      ret.id = ret._id;
+      delete ret._id;
+      delete ret.password;
+    },
+  },
 })
 export class User {
-  @ApiProperty({ description: 'Unique identifier for the user' })
-  @Prop({ type: String, default: () => crypto.randomUUID(), unique: true })
-  id: string;
-
   @ApiProperty({ description: 'Name of the user' })
   @Prop({ type: String, maxlength: 255 })
   name?: string;
@@ -55,6 +60,13 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+UserSchema.set('toJSON', { virtuals: true });
+UserSchema.set('toObject', { virtuals: true });
 
 // UserSchema.pre('save', async function (next) {
 //   const user = this as UserDocument;

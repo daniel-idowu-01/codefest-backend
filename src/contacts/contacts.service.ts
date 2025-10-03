@@ -1,46 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { EmergencyContact } from './entities/contact.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  EmergencyContact,
+  EmergencyContactDocument,
+} from './schema/contact.schema';
 
 @Injectable()
 export class ContactsService {
   constructor(
-    @InjectRepository(EmergencyContact)
-    private contactsRepository: Repository<EmergencyContact>,
+    @InjectModel(EmergencyContact.name)
+    private contactsModel: Model<EmergencyContactDocument>,
   ) {
     this.seedEmergencyContacts();
   }
 
   async findAll(): Promise<EmergencyContact[]> {
-    return this.contactsRepository.find({
-      order: { state: 'ASC', name: 'ASC' },
-    });
+    return this.contactsModel.find().sort({ state: 1, name: 1 }).exec();
   }
 
   async findByState(state: string): Promise<EmergencyContact[]> {
-    return this.contactsRepository.find({
-      where: { state },
-      order: { name: 'ASC' },
-    });
+    return this.contactsModel.find({ state }).sort({ name: 1 }).exec();
   }
 
   async findByType(type: string): Promise<EmergencyContact[]> {
-    return this.contactsRepository.find({
-      where: { type },
-      order: { state: 'ASC', name: 'ASC' },
-    });
+    return this.contactsModel.find({ type }).sort({ state: 1, name: 1 }).exec();
   }
 
   async find24HourContacts(): Promise<EmergencyContact[]> {
-    return this.contactsRepository.find({
-      where: { is24Hours: true },
-      order: { state: 'ASC', name: 'ASC' },
-    });
+    return this.contactsModel
+      .find({ is24Hours: true })
+      .sort({ state: 1, name: 1 })
+      .exec();
   }
 
   private async seedEmergencyContacts() {
-    const count = await this.contactsRepository.count();
+    const count = await this.contactsModel.countDocuments();
     if (count > 0) return;
 
     const seedData = [
@@ -165,10 +160,7 @@ export class ContactsService {
       },
     ];
 
-    for (const data of seedData) {
-      const contact = this.contactsRepository.create(data);
-      await this.contactsRepository.save(contact);
-    }
+    await this.contactsModel.insertMany(seedData);
 
     console.log('Emergency contacts seeded successfully');
   }

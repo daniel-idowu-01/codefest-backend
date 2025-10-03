@@ -13,7 +13,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { OtpService } from 'src/otp/otp.service';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/users/schema/user.schema';
 import { Response } from 'express';
 
 @Injectable()
@@ -53,31 +53,31 @@ export class AuthService {
     return user;
   }
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userService.getUserByEmail(email);
-    // if (user && (await bcrypt.compare(password, user.password))) {
-    //   return user;
-    // }
-    return null;
-  }
+  // async validateUser(email: string, password: string): Promise<User | null> {
+  //   const user = await this.userService.getUserByEmail(email);
+  //   if (user && (await bcrypt.compare(password, user.password))) {
+  //     return user;
+  //   }
+  //   return null;
+  // }
 
-  async login(loginAuthDto: LoginAuthDto, res: Response) {
-    const user = await this.validateUser(
-      loginAuthDto.email,
-      loginAuthDto.password,
-    );
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+  // async login(loginAuthDto: LoginAuthDto, res: Response) {
+  //   const user = await this.validateUser(
+  //     loginAuthDto.email,
+  //     loginAuthDto.password,
+  //   );
+  //   if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    const payload = { sub: user.id, email: user.email };
-    const access_token = this.jwtService.sign(payload);
+  //   const payload = { sub: user.id, email: user.email };
+  //   const access_token = this.jwtService.sign(payload);
 
-    res.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 1000 * 60 * 60,
-    });
+  //   res.cookie('access_token', access_token, {
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === 'production',
+  //     sameSite: 'strict',
+  //     maxAge: 1000 * 60 * 60,
+  //   });
 
-    return { access_token };
-  }
+  //   return { access_token };
+  // }
 }

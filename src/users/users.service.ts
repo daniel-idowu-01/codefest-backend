@@ -1,53 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { User, UserDocument } from './schema/user.schema';
 import { CreateAuthDto, SignUpDto } from 'src/auth/dto/create-auth.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async createUser(createUser: SignUpDto) {
-    const user = await this.userRepository.create(createUser);
-    return await this.userRepository.save(user);
+  async createUser(createUser: SignUpDto): Promise<UserDocument> {
+    const user = new this.userModel(createUser);
+    return user.save();
   }
 
-  async onboarding(userId: string, createUser: CreateAuthDto) {
-    const existingUser = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+  async onboarding(userId: string, createUser: CreateAuthDto): Promise<User> {
+    const existingUser = await this.userModel.findById(userId).exec();
 
     if (!existingUser) {
       throw new NotFoundException('User not found');
     }
 
-    const user = await this.userRepository.preload({
-      id: userId,
-      ...createUser,
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return this.userRepository.save(user);
+    Object.assign(existingUser, createUser);
+    return existingUser.save();
   }
 
-  async getUserById(id: string) {
-    const user = await this.userRepository.findOne({ where: { id } });
-
-    return user;
+  async getUserById(id: string): Promise<User | null> {
+    return this.userModel.findById(id).exec();
   }
 
-  async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
-
-    return user;
+  async getUserByEmail(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email }).exec();
   }
 }

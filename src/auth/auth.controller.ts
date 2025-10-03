@@ -34,19 +34,19 @@ export class AuthController {
     }
   }
 
-  @Post('login')
-  async login(
-    @Body() loginAuthDto: LoginAuthDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    try {
-      const response = await this.authService.login(loginAuthDto, res);
+  // @Post('login')
+  // async login(
+  //   @Body() loginAuthDto: LoginAuthDto,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
+  //   try {
+  //     const response = await this.authService.login(loginAuthDto, res);
 
-      return new SuccessResponseObject('User logged in!', response);
-    } catch (error) {
-      ErrorResponseObject('Failed to log user in', error);
-    }
-  }
+  //     return new SuccessResponseObject('User logged in!', response);
+  //   } catch (error) {
+  //     ErrorResponseObject('Failed to log user in', error);
+  //   }
+  // }
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
