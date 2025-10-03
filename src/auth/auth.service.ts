@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -40,17 +42,22 @@ export class AuthService {
   }
 
   async onboarding(userId: string, createAuthDto: CreateAuthDto) {
-    const existingUser = await this.userService.getUserById(userId);
-    if (existingUser) {
-      throw new ConflictException('User already onboarded');
-    }
+    const user = await this.userService.getUserById(userId);
+    if (!user) throw new NotFoundException('User not found');
 
-    const user = await this.userService.onboarding(userId, createAuthDto);
-    if (!user) {
+    // if(!user.emailVerifiedAt) throw new BadRequestException('Email not verified')
+
+    if (user.onboardedAt) throw new ConflictException('User already onboarded');
+
+    const updatedUser = await this.userService.onboarding(
+      userId,
+      createAuthDto,
+    );
+
+    if (!updatedUser)
       throw new InternalServerErrorException('Onboarding failed');
-    }
 
-    return user;
+    return updatedUser;
   }
 
   // async validateUser(email: string, password: string): Promise<User | null> {

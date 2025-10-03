@@ -39,6 +39,14 @@ export class User {
   @Prop({ type: String })
   address?: string;
 
+  @ApiProperty({ description: 'Date of onboarding' })
+  @Prop({ type: Date })
+  onboardedAt?: Date;
+
+  @ApiProperty({ description: 'Date of email verification' })
+  @Prop({ type: Date })
+  emailVerifiedAt?: Date;
+
   @ApiProperty({ description: 'Record creation timestamp' })
   @Prop({ type: Date })
   createdAt: Date;

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,7 +26,12 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    Object.assign(existingUser, createUser);
+    if (existingUser.onboardedAt) {
+      throw new ConflictException('User already onboarded');
+    }
+
+    Object.assign(existingUser, createUser, { onboardedAt: new Date() });
+
     return existingUser.save();
   }
 
