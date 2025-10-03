@@ -4,6 +4,7 @@ import { CreateAuthDto, SignUpDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import type { Response } from 'express';
 import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,20 @@ export class AuthController {
       return new SuccessResponseObject('User created successfully!', response);
     } catch (error) {
       ErrorResponseObject('Failed to create user', error);
+    }
+  }
+
+  @Post('verify-email')
+  async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+    try {
+      const response = await this.authService.verifyEmail(verifyEmailDto);
+
+      return new SuccessResponseObject(
+        'Email verified successfully!',
+        response,
+      );
+    } catch (error) {
+      ErrorResponseObject('Failed to verify email', error);
     }
   }
 

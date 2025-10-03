@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, Types } from 'mongoose';
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/users/schema/user.schema';
 
 export type OtpDocument = Otp & Document;
 
@@ -13,7 +13,7 @@ export enum OtpType {
 export class Otp {
   @ApiProperty({ description: 'User associated with this OTP' })
   @Prop({ type: Types.ObjectId, ref: User.name, required: false })
-  user?: User | Types.ObjectId;
+  userId?: User | Types.ObjectId;
 
   @ApiProperty({ description: 'OTP code' })
   @Prop({ type: String, required: true, maxlength: 255 })

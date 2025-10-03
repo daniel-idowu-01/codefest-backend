@@ -16,7 +16,7 @@ export class UsersService {
 
   async createUser(createUser: SignUpDto): Promise<UserDocument> {
     const user = new this.userModel(createUser);
-    return user.save();
+    return await user.save();
   }
 
   async onboarding(userId: string, createUser: CreateAuthDto): Promise<User> {
@@ -39,7 +39,7 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
+  async getUserByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
 }

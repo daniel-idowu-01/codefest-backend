@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OTPEmailTemplate } from './email-template';
 import nodemailer from 'nodemailer';
-import { OtpType } from 'src/otp/entities/otp.entity';
+import { OtpType } from 'src/otp/schema/otp.schema';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

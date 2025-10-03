@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ContactsService } from './contacts.service';
-import { EmergencyContact } from './entities/contact.entity';
+import { EmergencyContact } from './schema/contact.schema';
 import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
 
 @ApiTags('contacts')

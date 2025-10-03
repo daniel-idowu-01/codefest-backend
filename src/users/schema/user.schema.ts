@@ -55,10 +55,6 @@ export class User {
   @Prop({ type: Date })
   updatedAt: Date;
 
-  @ApiProperty({ description: 'One-to-one relationship with OTP' })
-  @Prop({ type: Types.ObjectId, ref: 'Otp' })
-  otp?: Types.ObjectId;
-
   // async hashPassword() {
   //   if (this.password && !this.password.startsWith('$2b$')) {
   //     const salt = await bcrypt.genSalt(10);
@@ -69,12 +65,12 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.virtual('id').get(function () {
-  return this._id.toHexString();
-});
+// UserSchema.virtual('id').get(function () {
+//   return this._id.toHexString();
+// });
 
-UserSchema.set('toJSON', { virtuals: true });
-UserSchema.set('toObject', { virtuals: true });
+// UserSchema.set('toJSON', { virtuals: true });
+// UserSchema.set('toObject', { virtuals: true });
 
 // UserSchema.pre('save', async function (next) {
 //   const user = this as UserDocument;

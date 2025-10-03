@@ -37,8 +37,8 @@ export class OtpService {
     return updatedOtp;
   }
 
-  async validate(userId: string, code: string): Promise<boolean> {
-    const otp = await this.otpModel.findOne({ userId, otp: code }).exec();
+  async validate(email: string, code: string): Promise<boolean> {
+    const otp = await this.otpModel.findOne({ email, otp: code }).exec();
 
     if (!otp) throw new NotFoundException('OTP not found or invalid');
     if (otp.usedAt) throw new BadRequestException('OTP already used');

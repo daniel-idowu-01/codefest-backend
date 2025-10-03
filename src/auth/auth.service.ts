@@ -17,6 +17,7 @@ import { OtpService } from 'src/otp/otp.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/schema/user.schema';
 import { Response } from 'express';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,26 @@ export class AuthService {
     }
 
     await this.otpService.sendOtp(user);
+
+    return user;
+  }
+
+  async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<User> {
+    const { email, otp } = verifyEmailDto;
+
+    await this.otpService.validate(email, otp);
+
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.emailVerifiedAt) {
+      throw new ConflictException('Email already verified');
+    }
+
+    user.emailVerifiedAt = new Date();
+    await user.save();
 
     return user;
   }
