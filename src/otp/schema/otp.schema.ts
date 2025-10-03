@@ -11,10 +11,6 @@ export enum OtpType {
 
 @Schema({ collection: 'otp', timestamps: true })
 export class Otp {
-  @ApiProperty({ description: 'Unique identifier for the OTP' })
-  @Prop({ type: String, default: () => crypto.randomUUID(), unique: true })
-  id: string;
-
   @ApiProperty({ description: 'User associated with this OTP' })
   @Prop({ type: Types.ObjectId, ref: User.name, required: false })
   user?: User | Types.ObjectId;

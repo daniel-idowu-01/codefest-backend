@@ -10,11 +10,11 @@ export class EmailService {
   constructor(private configService: ConfigService) {
     const host = this.configService.get<string>('EMAIL_HOST');
     const port = this.configService.get<number>('EMAIL_PORT');
-    const pass = this.configService.get<string>('EMAIL_USER');
-    const user = this.configService.get<string>('EMAIL_PASS');
-
+    const user = this.configService.get<string>('EMAIL_USER');
+    const pass = this.configService.get<string>('EMAIL_PASS');
+    
     this.transporter = nodemailer.createTransport({
-      host,
+      service: 'gmail',
       port,
       secure: false,
       auth: {
@@ -32,7 +32,7 @@ export class EmailService {
   ): Promise<boolean> {
     try {
       const mailOptions = {
-        from: this.configService.get<string>('EMAIL_FROM'),
+        from: `"MHT" <mht@info.com>`,
         to,
         subject,
         text,
@@ -60,6 +60,6 @@ export class EmailService {
         break;
     }
 
-    return this.sendMail(to, subject, `Your code is: ${otp}`, html);
+    return await this.sendMail(to, subject, `Your code is: ${otp}`, html);
   }
 }

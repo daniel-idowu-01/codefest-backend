@@ -9,10 +9,6 @@ export type VisitDocument = Visit & Document;
   timestamps: { createdAt: true, updatedAt: true },
 })
 export class Visit {
-  @ApiProperty({ description: 'Unique identifier for the visit' })
-  @Prop({ type: String, default: () => crypto.randomUUID(), unique: true })
-  id: string;
-
   @ApiProperty({ description: 'Date of the antenatal visit' })
   @Prop({ type: Date, required: true })
   visitDate: Date;

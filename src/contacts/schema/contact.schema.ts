@@ -9,10 +9,6 @@ export type EmergencyContactDocument = EmergencyContact & Document;
   timestamps: { createdAt: true, updatedAt: false },
 })
 export class EmergencyContact {
-  @ApiProperty({ description: 'Unique identifier for the contact' })
-  @Prop({ type: String, default: () => crypto.randomUUID(), unique: true })
-  id: string;
-
   @ApiProperty({ description: 'Name of the facility or contact' })
   @Prop({ type: String, required: true, maxlength: 255 })
   name: string;

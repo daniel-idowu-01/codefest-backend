@@ -26,6 +26,7 @@ export class OtpService {
       otp: otpCode,
       userId: user._id,
     });
+    const updatedOtp = await otp.save();
 
     await this.emailService.sendOtp(
       user.email,
@@ -33,7 +34,7 @@ export class OtpService {
       OtpType.VERIFICATION_CODE,
     );
 
-    return otp.save();
+    return updatedOtp;
   }
 
   async validate(userId: string, code: string): Promise<boolean> {

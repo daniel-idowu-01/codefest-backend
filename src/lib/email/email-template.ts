@@ -29,7 +29,7 @@ const BaseEmailTemplate = (
         <p>If you didn't request this code, please ignore this email.</p>
       </div>
       <div class="footer">
-        <p>© ${new Date().getFullYear()} Virtual Flux Africa. All rights reserved.</p>
+        <p>© ${new Date().getFullYear()} MHT. All rights reserved.</p>
       </div>
     </div>
   </body>
