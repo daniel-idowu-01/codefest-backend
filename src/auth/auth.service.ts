@@ -11,6 +11,7 @@ import { CreateAuthDto, SignUpDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
+import { OtpService } from 'src/otp/otp.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { Response } from 'express';
@@ -19,6 +20,7 @@ import { Response } from 'express';
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
+    private readonly otpService: OtpService,
     private jwtService: JwtService,
   ) {}
   async signUp(signUpDto: SignUpDto) {

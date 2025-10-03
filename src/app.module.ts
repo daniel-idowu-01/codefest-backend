@@ -24,7 +24,7 @@ import { LocationModule } from './location/location.module';
       type: 'sqlite',
       database: 'maternal_health.db',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: false,
       logging: process.env.NODE_ENV !== 'production',
     }),
     UsersModule, AuthModule, VisitsModule, ContactsModule, HealthModule, LocationModule],

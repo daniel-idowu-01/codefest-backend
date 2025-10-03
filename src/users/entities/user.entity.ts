@@ -6,10 +6,13 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Otp } from 'src/otp/entities/otp.entity';
 
 @Entity('users')
 export class User {
@@ -54,4 +57,7 @@ export class User {
   //     this.password = await bcrypt.hash(this.password, salt);
   //   }
   // }
+
+  @OneToOne(() => Otp, (otp) => otp.user, { cascade: true, eager: false })
+  otp?: Otp;
 }
