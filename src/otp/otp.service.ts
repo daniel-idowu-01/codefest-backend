@@ -5,24 +5,34 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Otp } from './entities/otp.entity';
+import { Otp, OtpType } from './entities/otp.entity';
 import { User } from 'src/users/entities/user.entity';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
+import { EmailService } from 'src/lib/email/email.service';
 
 @Injectable()
 export class OtpService {
   constructor(
     @InjectRepository(Otp)
     private readonly otpRepo: Repository<Otp>,
+    private readonly emailService: EmailService,
   ) {}
 
-  async generate(user: User): Promise<Otp> {
+  async sendOtp(user: User): Promise<Otp> {
     await this.otpRepo.delete({ userId: user.id });
 
+    const otpCode = this.generateCode();
+
     const otp = this.otpRepo.create({
-      otp: this.generateCode(),
+      otp: otpCode,
       userId: user.id,
     });
+
+    await this.emailService.sendOtp(
+      user.email,
+      otpCode,
+      OtpType.VERIFICATION_CODE,
+    );
 
     return this.otpRepo.save(otp);
   }

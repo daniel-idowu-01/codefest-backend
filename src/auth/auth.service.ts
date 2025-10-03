@@ -34,11 +34,13 @@ export class AuthService {
       throw new InternalServerErrorException('Failed to create user');
     }
 
+    await this.otpService.sendOtp(user);
+
     return user;
   }
 
   async onboarding(userId: string, createAuthDto: CreateAuthDto) {
-     const existingUser = await this.userService.getUserById(userId);
+    const existingUser = await this.userService.getUserById(userId);
     if (existingUser) {
       throw new ConflictException('User already onboarded');
     }

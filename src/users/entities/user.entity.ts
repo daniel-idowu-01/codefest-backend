@@ -21,12 +21,16 @@ export class User {
   id: string;
 
   @ApiProperty({ description: 'Name of the user' })
-  @Column({ length: 255,  nullable: true })
+  @Column({ length: 255, nullable: true })
   name: string;
 
   @ApiProperty({ description: 'Email of user' })
   @Column({ length: 255, unique: true })
   email: string;
+
+  // @ApiProperty({ description: 'Date the email was verified' })
+  // @Column({ type: 'datetime', nullable: true })
+  // emailVerifiedAt?: Date;
 
   // @Exclude()
   // @ApiProperty({ description: 'Password of user' })
@@ -34,7 +38,7 @@ export class User {
   // password: string;
 
   @ApiProperty({ description: 'Phone number' })
-  @Column({ length: 20, unique: true,  nullable: true })
+  @Column({ length: 20, unique: true, nullable: true })
   phoneNumber: string;
 
   @ApiProperty({ description: 'Physical address', required: false })

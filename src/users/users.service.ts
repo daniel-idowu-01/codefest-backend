@@ -14,8 +14,8 @@ export class UsersService {
   ) {}
 
   async createUser(createUser: SignUpDto) {
-    const user = this.userRepository.create(createUser);
-    return this.userRepository.save(user);
+    const user = await this.userRepository.create(createUser);
+    return await this.userRepository.save(user);
   }
 
   async onboarding(userId: string, createUser: CreateAuthDto) {

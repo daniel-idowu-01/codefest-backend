@@ -11,6 +11,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 
+export enum OtpType {
+  VERIFICATION_CODE = 'verification_code',
+}
+
 @Entity('otp')
 export class Otp {
   @ApiProperty({ description: 'Unique identifier for the OTP' })
