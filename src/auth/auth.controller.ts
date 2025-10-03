@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, SignUpDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import type { Response } from 'express';
 import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
@@ -10,11 +10,25 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signUp(@Body() createAuthDto: CreateAuthDto) {
+  async signUp(@Body() signUpDto: SignUpDto) {
     try {
-      const response = await this.authService.signUp(createAuthDto);
+      const response = await this.authService.signUp(signUpDto);
 
       return new SuccessResponseObject('User created successfully!', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to create user', error);
+    }
+  }
+
+  @Post('onboarding/:id')
+  async onboarding(
+    @Param('id') userId: string,
+    @Body() createAuthDto: CreateAuthDto,
+  ) {
+    try {
+      const response = await this.authService.onboarding(userId, createAuthDto);
+
+      return new SuccessResponseObject('Onboarding successfully!', response);
     } catch (error) {
       ErrorResponseObject('Failed to create user', error);
     }

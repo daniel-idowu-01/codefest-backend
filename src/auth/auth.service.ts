@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, SignUpDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { UsersService } from 'src/users/users.service';
@@ -21,15 +21,13 @@ export class AuthService {
     private readonly userService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async signUp(createAuthDto: CreateAuthDto) {
-    const existingUser = await this.userService.getUserByEmail(
-      createAuthDto.email,
-    );
+  async signUp(signUpDto: SignUpDto) {
+    const existingUser = await this.userService.getUserByEmail(signUpDto.email);
     if (existingUser) {
       throw new ConflictException('User already exists');
     }
 
-    const user = await this.userService.createUser(createAuthDto);
+    const user = await this.userService.createUser(signUpDto);
     if (!user) {
       throw new InternalServerErrorException('Failed to create user');
     }
@@ -37,11 +35,20 @@ export class AuthService {
     return user;
   }
 
+  async onboarding(userId: string, createAuthDto: CreateAuthDto) {
+    const user = await this.userService.onboarding(userId, createAuthDto);
+    if (!user) {
+      throw new InternalServerErrorException('Onboarding failed');
+    }
+
+    return user;
+  }
+
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userService.getUserByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
-    }
+    // if (user && (await bcrypt.compare(password, user.password))) {
+    //   return user;
+    // }
     return null;
   }
 

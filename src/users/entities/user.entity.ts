@@ -18,20 +18,20 @@ export class User {
   id: string;
 
   @ApiProperty({ description: 'Name of the user' })
-  @Column({ length: 255 })
+  @Column({ length: 255,  nullable: true })
   name: string;
 
   @ApiProperty({ description: 'Email of user' })
   @Column({ length: 255, unique: true })
   email: string;
 
-  @Exclude()
-  @ApiProperty({ description: 'Password of user' })
-  @Column({ length: 255 })
-  password: string;
+  // @Exclude()
+  // @ApiProperty({ description: 'Password of user' })
+  // @Column({ length: 255, nullable: true })
+  // password: string;
 
   @ApiProperty({ description: 'Phone number' })
-  @Column({ length: 20, unique: true })
+  @Column({ length: 20, unique: true,  nullable: true })
   phoneNumber: string;
 
   @ApiProperty({ description: 'Physical address', required: false })
@@ -46,12 +46,12 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (this.password && !this.password.startsWith('$2b$')) {
-      const salt = await bcrypt.genSalt(10);
-      this.password = await bcrypt.hash(this.password, salt);
-    }
-  }
+  // @BeforeInsert()
+  // @BeforeUpdate()
+  // async hashPassword() {
+  //   if (this.password && !this.password.startsWith('$2b$')) {
+  //     const salt = await bcrypt.genSalt(10);
+  //     this.password = await bcrypt.hash(this.password, salt);
+  //   }
+  // }
 }
