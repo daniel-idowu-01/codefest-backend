@@ -36,6 +36,11 @@ export class AuthService {
   }
 
   async onboarding(userId: string, createAuthDto: CreateAuthDto) {
+     const existingUser = await this.userService.getUserById(userId);
+    if (existingUser) {
+      throw new ConflictException('User already onboarded');
+    }
+
     const user = await this.userService.onboarding(userId, createAuthDto);
     if (!user) {
       throw new InternalServerErrorException('Onboarding failed');
