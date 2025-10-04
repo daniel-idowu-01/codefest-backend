@@ -52,7 +52,6 @@ export class AuthService {
 
     await this.otpService.validate(user.id, otp);
 
-
     if (user.emailVerifiedAt) {
       throw new ConflictException('Email already verified');
     }
@@ -63,11 +62,19 @@ export class AuthService {
     return user;
   }
 
+  async verifyPhoneNumber(phoneNumber: string) {
+    const user = await this.userService.getUserByPhoneNumber(phoneNumber);
+    if (user) throw new ConflictException('Phone number in use!');
+
+    return;
+  }
+
   async onboarding(userId: string, createAuthDto: CreateAuthDto) {
     const user = await this.userService.getUserById(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    if(!user.emailVerifiedAt) throw new BadRequestException('Email not verified')
+    if (!user.emailVerifiedAt)
+      throw new BadRequestException('Email not verified');
 
     if (user.onboardedAt) throw new ConflictException('User already onboarded');
 

@@ -5,6 +5,7 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import type { Response } from 'express';
 import { SuccessResponseObject, ErrorResponseObject } from 'src/shared/https';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerifyPhoneDto } from './dto/verify-phone.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +33,19 @@ export class AuthController {
       );
     } catch (error) {
       ErrorResponseObject('Failed to verify email', error);
+    }
+  }
+
+  @Post('verify-phone-number')
+  async verifyPhoneNumber(@Body() verifyPhoneDto: VerifyPhoneDto) {
+    try {
+      const response = await this.authService.verifyPhoneNumber(
+        verifyPhoneDto.phoneNumber,
+      );
+
+      return new SuccessResponseObject('Phone number free to use!', response);
+    } catch (error) {
+      ErrorResponseObject('Failed to verify phone number', error);
     }
   }
 
